@@ -396,7 +396,7 @@
         <div id="heroCard">
         </div>
 
-        <h3 class="section-title">Next Spawns (Click to View)</h3>
+        <h3 class="section-title">Timeline (Select)</h3>
         <div class="scroll-container" id="futureForecasts">
         </div>
 
@@ -592,32 +592,32 @@
             // 預設顯示第一筆（目前天氣）
             updateHeroCard(0);
 
-            // 渲染下方列表 (從第二筆開始)
-            const others = globalForecasts.slice(1);
+            // 渲染下方列表 (包含目前天氣，從 Index 0 開始)
             const scrollContainer = document.getElementById('futureForecasts');
             scrollContainer.innerHTML = '';
 
             const todayDate = new Date().getDate();
 
-            others.forEach((f, i) => {
-                // 計算全域索引 (因為 others 是從 index 1 開始切，所以實際 index 是 i + 1)
-                const globalIndex = i + 1;
-
+            globalForecasts.forEach((f, i) => {
                 let p = getTimePeriod(f.startTime);
                 const fDate = new Date(f.startTime);
-                if (fDate.getDate() !== todayDate) {
+                
+                // 處理第一筆資料顯示為 "NOW"
+                if (i === 0) {
+                    p = "NOW"; 
+                } else if (fDate.getDate() !== todayDate) {
                     p = "TMR " + p;
                 }
 
                 let iconHtml = getVoxelWeatherIcon(f.weather);
                 iconHtml = iconHtml.replace('class="voxel-icon"', 'class="voxel-icon" style="width:50px; height:50px;"');
 
-                // 加入 onclick 事件，傳遞 globalIndex
+                // 加入 onclick 事件，傳遞 i (即 index)
                 scrollContainer.innerHTML += `
-                    <div class="mini-card" onclick="updateHeroCard(${globalIndex})">
+                    <div class="mini-card" onclick="updateHeroCard(${i})">
                         <div class="mini-studs"></div>
                         <div class="mini-content">
-                            <div class="mini-time">${p}</div>
+                            <div class="mini-time" style="${i === 0 ? 'color: var(--rb-yellow); border-color: var(--rb-yellow);' : ''}">${p}</div>
                             ${iconHtml}
                             <div class="mini-temp">${f.minTemp}°-${f.maxTemp}°</div>
                             <div style="font-size:1rem; color:#888; font-family:'VT323'; margin-top:2px;">💧${f.rain}%</div>
